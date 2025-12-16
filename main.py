@@ -1,39 +1,31 @@
-import pyautogui
+import threading
 import time
+import pyautogui
 import walk
-import keyboard
+import gui
 
 running = False
 
-def start():
+def start(b):
     global running
     if running:
         return
     running = True
-    print("start za 2s")
-    time.sleep(2)
-    pyautogui.mouseDown(button='left')
-    
-    while running:
-        walk.walking(b)
 
-    pyautogui.mouseUp(button='left')
+    def loop():
+        time.sleep(2)
+        pyautogui.mouseDown(button='left')
+
+        while running:
+            walk.walking(b)
+        pyautogui.mouseUp(button='left')
+
+    threading.Thread(target=loop, daemon=True).start()
 
 def stop():
     global running
     running = False
 
 
-def main():
-    print("start za 2s")
-    time.sleep(2)
-    walk.walking()
-    print('koniec')
-
-b = int(input("Podaj liczbe stowniarek: "))
-
-
-keyboard.add_hotkey("f8", start)   # START
-keyboard.add_hotkey("f9", stop)
-
-keyboard.wait()
+if __name__ == "__main__":
+    gui.run(start, stop)
